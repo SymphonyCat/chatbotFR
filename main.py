@@ -5,8 +5,8 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 
-# Configuración del modelo (verifica si hay una versión más rápida o menos compleja)
-llm = Ollama(model="llama3:8b")
+# Configuración del modelo apuntando a tu servidor local
+llm = Ollama(model="llama3:8b", server_url="http://localhost:11434")  # Asegúrate de que esta URL es correcta
 
 def main():
     st.title("CircuitSage-Asistente Técnico")
@@ -36,13 +36,16 @@ def main():
             # Mostrar un mensaje de "espera" mientras se procesa la respuesta
             with st.spinner("Generando respuesta, por favor espera..."):
                 start_time = time.time()
-                response = chain.invoke({"input": user_input, "chat_history": st.session_state["chat_history"]})
+                try:
+                    response = chain.invoke({"input": user_input, "chat_history": st.session_state["chat_history"]})
+                    st.session_state["chat_history"].append(HumanMessage(content=user_input))
+                    st.session_state["chat_history"].append(AIMessage(content=response))
+                except Exception as e:
+                    st.error("Error al generar la respuesta. Asegúrate de que Ollama está funcionando correctamente.")
+                    st.error(str(e))
                 elapsed_time = time.time() - start_time
                 if elapsed_time > 60:
                     st.warning("La generación de la respuesta está tardando más de lo esperado.")
-
-            st.session_state["chat_history"].append(HumanMessage(content=user_input))
-            st.session_state["chat_history"].append(AIMessage(content=response))
 
     chat_display = ""
     for msg in st.session_state["chat_history"]:
