@@ -7,4 +7,3 @@ streamlit
 chromadb
 bs4
 ngrok
-freeze
