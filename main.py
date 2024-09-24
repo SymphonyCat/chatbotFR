@@ -5,10 +5,14 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 from pydantic import ValidationError
+import requests
+
+# Cambia esta dirección por la URL pública de ngrok o Localtunnel cuando lo uses
+SERVER_URL = "http://<tu-ngrok-id>.ngrok.io"  # Cambia esto
 
 # Intentar inicializar el modelo con manejo de errores
 try:
-    llm = Ollama(model="llama3:8b")  # Eliminar server_url
+    llm = Ollama(model="llama3:8b", server_url=SERVER_URL)  # Usa SERVER_URL
 except ValidationError as e:
     st.error(f"Error de validación: {e.json()}")
     st.stop()  # Detener la ejecución si hay un error de validación
