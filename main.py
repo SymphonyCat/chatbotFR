@@ -1,29 +1,17 @@
 import streamlit as st
-import requests
-import time
+from langchain_community.llms import Ollama
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+import time
 
-# Cambia esta dirección por la URL pública de ngrok o Localtunnel cuando lo uses
-SERVER_URL = "http://<tu-ngrok-id>.ngrok.io"  # Cambia esto
 
-def generate_response(user_input, chat_history):
-    payload = {
-        "input": user_input,
-        "chat_history": chat_history
-    }
-    # Asegúrate de que SERVER_URL esté configurado correctamente
-    response = requests.post(f"{SERVER_URL}/api/chat", json=payload)
-    if response.status_code == 200:
-        return response.json().get("response", "No se recibió respuesta.")
-    else:
-        raise Exception("Error en la comunicación con el servidor.")
+llm = Ollama(model="llama3:8b")
 
 def main():
     st.title("CircuitSage-Asistente Técnico")
 
     bot_name = "CircuitSage"
-    bot_description = "Eres un asistente virtual especializado en resolver problemas técnicos..."
+    bot_description = f"""Eres un asistente virtual especializado en resolver problemas técnicos de laptops y computadoras de sobremesa solamente. Te llamas {bot_name}, respondes preguntas con respuestas detalladas. Además, debes preguntar al usuario acorde al contexto del chat y también preguntar al usuario para obtener una respuesta más detallada. Solo te presentarás con un hola y preguntando al usuario qué se le ofrece o cuál es su problema. Cualquier tema que no esté relacionado con el hardware de las computadoras y laptops descártalo de forma contundente."""
 
     if "chat_history" not in st.session_state:
         st.session_state["chat_history"] = []
@@ -36,35 +24,33 @@ def main():
         ]
     )
 
+    chain = prompt_template | llm
+
     user_input = st.text_input("Escribe tu pregunta:", key="user_input")
 
     if st.button("Enviar"):
         if user_input.lower() == "adios":
             st.stop()
-        elif user_input.strip():
+        else:
             with st.spinner("Generando respuesta, por favor espera..."):
                 start_time = time.time()
                 try:
-                    response = generate_response(user_input, st.session_state["chat_history"])
+                    response = chain.invoke({"input": user_input, "chat_history": st.session_state["chat_history"]})
                     st.session_state["chat_history"].append(HumanMessage(content=user_input))
                     st.session_state["chat_history"].append(AIMessage(content=response))
                 except Exception as e:
-                    st.error("Error al generar la respuesta.")
+                    st.error("Error al generar la respuesta. Asegúrate de que Ollama está funcionando correctamente.")
                     st.error(str(e))
                 elapsed_time = time.time() - start_time
                 if elapsed_time > 60:
                     st.warning("La generación de la respuesta está tardando más de lo esperado.")
-        else:
-            st.warning("Por favor, escribe un mensaje antes de enviar.")
 
-    chat_display = ""
-    for msg in st.session_state["chat_history"]:
-        if isinstance(msg, HumanMessage):
-            chat_display += f"🦧Yo: {msg.content}\n"
-        elif isinstance(msg, AIMessage):
-            chat_display += f"🔧{bot_name}: {msg.content}\n"
+    chat_display = "\n".join(
+        f"🦧Yo: {msg.content}" if isinstance(msg, HumanMessage) else f"🔧{bot_name}: {msg.content}"
+        for msg in st.session_state["chat_history"]
+    )
 
-    st.text_area("Chat", value=chat_display, height=400, key="chat_area")
+    st.text_area("Chat", value=chat_display, height=400, key="chat_area", disabled=True)
 
 if __name__ == '__main__':
     main()
