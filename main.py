@@ -12,7 +12,7 @@ def generate_response(user_input, chat_history):
         "input": user_input,
         "chat_history": chat_history
     }
-    response = requests.post(f"{SERVER_URL}/api/chat", json=payload)
+    response = requests.post(f"{http://127.0.0.1:4040 }/api/chat", json=payload)
     if response.status_code == 200:
         return response.json().get("response", "No se recibió respuesta.")
     else:
