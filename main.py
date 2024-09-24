@@ -6,7 +6,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 
 # Configuración del modelo apuntando a tu servidor local
-llm = Ollama(model="llama3:8b", server_url="http://localhost:11434")  # Asegúrate de que esta URL es correcta
+llm = Ollama(model="llama3:8b", server_url="http://127.0.0.1:11434")  # Asegúrate de que esta URL es correcta
 
 def main():
     st.title("CircuitSage-Asistente Técnico")
