@@ -1,5 +1,4 @@
 import streamlit as st
-from langchain.chains.summarize.map_reduce_prompt import prompt_template
 from langchain_community.llms import Ollama
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -12,7 +11,7 @@ def main():
     st.title("CircuitSage-Asistente Técnico")
 
     bot_name = "CircuitSage"
-    bot_description = f"""Eres un asistente virtual especializado en resolver problemas técnicos de laptops y computadoras de sobremesa solamente. Te llamas {bot_name}, respondes preguntas con respuestas detalladas. Además, debes preguntar al usuario acorde al contexto del chat, y también preguntar al usuario para obtener una respuesta más detallada, pero solamente te presentaras con un hola y preguntando al usuario que se le ofrece o cual es su problema, cualquier tema que no este relacionada con el hardware de las computadoras y laptops descartalo y hacelo saber al usuario de forma contundente."""
+    bot_description = f"""Eres un asistente virtual especializado en resolver problemas técnicos de laptops y computadoras de sobremesa solamente. Te llamas {bot_name}, respondes preguntas con respuestas detalladas. Además, debes preguntar al usuario acorde al contexto del chat y también preguntar al usuario para obtener una respuesta más detallada. Solo te presentarás con un hola y preguntando al usuario qué se le ofrece o cuál es su problema. Cualquier tema que no esté relacionado con el hardware de las computadoras y laptops descártalo de forma contundente."""
 
     if "chat_history" not in st.session_state:
         st.session_state["chat_history"] = []
@@ -33,7 +32,6 @@ def main():
         if user_input.lower() == "adios":
             st.stop()
         else:
-            # Mostrar un mensaje de "espera" mientras se procesa la respuesta
             with st.spinner("Generando respuesta, por favor espera..."):
                 start_time = time.time()
                 try:
@@ -47,14 +45,12 @@ def main():
                 if elapsed_time > 60:
                     st.warning("La generación de la respuesta está tardando más de lo esperado.")
 
-    chat_display = ""
-    for msg in st.session_state["chat_history"]:
-        if isinstance(msg, HumanMessage):
-            chat_display += f"🦧Yo: {msg.content}\n"
-        elif isinstance(msg, AIMessage):
-            chat_display += f"🔧{bot_name}: {msg.content}\n"
+    chat_display = "\n".join(
+        f"🦧Yo: {msg.content}" if isinstance(msg, HumanMessage) else f"🔧{bot_name}: {msg.content}"
+        for msg in st.session_state["chat_history"]
+    )
 
-    st.text_area("Chat", value=chat_display, height=400, key="chat_area")
+    st.text_area("Chat", value=chat_display, height=400, key="chat_area", disabled=True)
 
 if __name__ == '__main__':
     main()
