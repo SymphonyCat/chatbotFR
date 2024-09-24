@@ -7,3 +7,5 @@ streamlit
 chromadb
 bs4
 ngrok
+llama-index
+nltk
