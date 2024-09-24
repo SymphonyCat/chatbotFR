@@ -1,9 +1,3 @@
 streamlit
 langchain
 langchain_community
-prompt_template
-Ollama
-HumanMessage
-AIMessage
-ChatPromptTemplate
-MessagesPlaceholder
