@@ -4,8 +4,17 @@ from langchain_community.llms import Ollama
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
+from pydantic import ValidationError
 
-llm = Ollama(model="llama3:8b", server_url="http://127.0.0.1:11434/")
+# Intentar inicializar el modelo con manejo de errores
+try:
+    llm = Ollama(model="llama3:8b", server_url="http://127.0.0.1:11434/")
+except ValidationError as e:
+    st.error(f"Error de validación: {e.json()}")
+    st.stop()  # Detener la ejecución si hay un error de validación
+except Exception as e:
+    st.error(f"Error al inicializar el modelo: {str(e)}")
+    st.stop()  # Detener la ejecución si hay otro tipo de error
 
 def main():
     st.title("CircuitSage-Asistente Técnico")
@@ -31,8 +40,7 @@ def main():
     if st.button("Enviar"):
         if user_input.lower() == "adios":
             st.stop()
-        else:
-            # Mostrar un mensaje de "espera" mientras se procesa la respuesta
+        elif user_input.strip():
             with st.spinner("Generando respuesta, por favor espera..."):
                 start_time = time.time()
                 try:
@@ -45,6 +53,8 @@ def main():
                 elapsed_time = time.time() - start_time
                 if elapsed_time > 60:
                     st.warning("La generación de la respuesta está tardando más de lo esperado.")
+        else:
+            st.warning("Por favor, escribe un mensaje antes de enviar.")
 
     chat_display = ""
     for msg in st.session_state["chat_history"]:
