@@ -8,7 +8,7 @@ from pydantic import ValidationError
 
 # Intentar inicializar el modelo con manejo de errores
 try:
-    llm = Ollama(model="llama3:8b", server_url="http://127.0.0.1:11434/")
+    llm = Ollama(model="llama3:8b")  # Eliminar server_url
 except ValidationError as e:
     st.error(f"Error de validación: {e.json()}")
     st.stop()  # Detener la ejecución si hay un error de validación
