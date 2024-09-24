@@ -5,7 +5,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 
-server_url = st.secrets["general"]["server_url"]
+host = st.secrets["general"]["server_url"]
 llm = Ollama(model="llama3:8b")
 
 def main():
