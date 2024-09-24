@@ -1,5 +1,4 @@
 import streamlit as st
-import cupy as cp
 from langchain.chains.summarize.map_reduce_prompt import prompt_template
 from langchain_community.llms import Ollama
 from langchain_core.messages import HumanMessage, AIMessage
