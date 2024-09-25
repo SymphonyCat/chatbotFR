@@ -5,7 +5,9 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 
-llm = Ollama(model="llama3.1:8b", server_url="http://127.0.0.1:11434")
+# Inicializa el modelo Ollama con una API key
+API_KEY = "LA-ea099ef9395941abb1a724a831fe15d7ef19fd4c47c042069fc859f7d9389e23"  # Reemplaza con tu clave de API
+llm = Ollama(model="llama3:8b", api_key=API_KEY)
 
 def main():
     st.title("CircuitSage-Asistente Técnico")
