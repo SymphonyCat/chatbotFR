@@ -5,7 +5,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 
-llm = Ollama(model="llama3:8b", server = "http://127.0.0.1")
+llm = Ollama(model="llama3:8b")
 
 def main():
     st.title("CircuitSage-Asistente Técnico")
