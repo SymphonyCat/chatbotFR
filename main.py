@@ -5,6 +5,8 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 
+!Ollama serve
+
 llm = Ollama(model="llama3:8b")
 
 def main():
